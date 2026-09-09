@@ -49,7 +49,7 @@ public function query()
     // user/support name diambil dari direktori pusat pilargroup (lihat centralUserMap()),
     // bukan dari tabel lokal `users`, biar export ga ikut down kalau tabel users lokal bermasalah.
     return Tickets::query()
-        ->with(['category:id,name','assets:id,assets_name'])
+        ->with(['category:id,name','assets:id,assets_name','feedback:id,ticket_id,rating'])
         // pakai request_date biar konsisten sama filter "Request Date" di tabel ticket
         ->when($this->start && $this->end, fn($q) => $q->betweenRequestDates($this->start, $this->end))
         ->when($this->status, fn($q) => $q->byStatus($this->status)) // ✅ resolved auto include feedback
@@ -120,6 +120,7 @@ private function centralUserMap(): array
             'Is Late',
             'Created At',
             'Updated At',
+            'Rating',
         ];
     }
 
@@ -155,6 +156,7 @@ private function centralUserMap(): array
 
             $this->fmtDateTime($ticket->created_at),
             $this->fmtDateTime($ticket->updated_at),
+            $ticket->feedback?->rating,
         ];
     }
 
@@ -188,12 +190,12 @@ private function centralUserMap(): array
         $sheet->freezePane('A2');
 
         // Wrap text biar problem/solution/notes ga kepotong
-        $sheet->getStyle('A:V')->getAlignment()->setVertical(Alignment::VERTICAL_TOP);
+        $sheet->getStyle('A:W')->getAlignment()->setVertical(Alignment::VERTICAL_TOP);
         $sheet->getStyle('K:M')->getAlignment()->setWrapText(true); // Problem/Solution/Notes (K,L,M)
-        $sheet->getStyle('A1:V1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:W1')->getFont()->setBold(true);
 
         // Biar header rapi
-        $sheet->getStyle('A1:V1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:W1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         // Lebarin kolom yang biasanya panjang (optional)
         $sheet->getColumnDimension('K')->setWidth(40); // Problem
@@ -213,6 +215,7 @@ private function centralUserMap(): array
             'B' => NumberFormat::FORMAT_NUMBER, // Ticket ID
             'O' => NumberFormat::FORMAT_NUMBER, // Waiting Hour
             'R' => NumberFormat::FORMAT_NUMBER, // Time Spent Minutes
+            'W' => NumberFormat::FORMAT_NUMBER, // Rating
             // Date columns kita output string "Y-m-d H:i:s" -> biar aman, ga usah excel-date (lebih konsisten)
         ];
     }
