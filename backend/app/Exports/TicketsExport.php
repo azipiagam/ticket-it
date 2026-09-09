@@ -99,6 +99,7 @@ private function centralUserMap(): array
     {
         return [
             'No',
+            'ID',
             'Ticket Code',
             'User Name',
             'Support Name',
@@ -187,18 +188,17 @@ private function centralUserMap(): array
         $sheet->freezePane('A2');
 
         // Wrap text biar problem/solution/notes ga kepotong
-        $sheet->getStyle('A:Z')->getAlignment()->setVertical(Alignment::VERTICAL_TOP);
-        $sheet->getStyle('N:P')->getAlignment()->setWrapText(true); // Problem/Solution/Notes (N,O,P)
-        $sheet->getStyle('A1:Z1')->getFont()->setBold(true);
+        $sheet->getStyle('A:V')->getAlignment()->setVertical(Alignment::VERTICAL_TOP);
+        $sheet->getStyle('K:M')->getAlignment()->setWrapText(true); // Problem/Solution/Notes (K,L,M)
+        $sheet->getStyle('A1:V1')->getFont()->setBold(true);
 
         // Biar header rapi
-        $sheet->getStyle('A1:Z1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:V1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         // Lebarin kolom yang biasanya panjang (optional)
-        $sheet->getColumnDimension('N')->setWidth(40); // Problem
-        $sheet->getColumnDimension('O')->setWidth(40); // Solution
-        $sheet->getColumnDimension('P')->setWidth(30); // Notes
-        $sheet->getColumnDimension('Q')->setWidth(45); // Image URL
+        $sheet->getColumnDimension('K')->setWidth(40); // Problem
+        $sheet->getColumnDimension('L')->setWidth(40); // Solution
+        $sheet->getColumnDimension('M')->setWidth(30); // Notes
 
         return [];
     }
@@ -211,12 +211,8 @@ private function centralUserMap(): array
         return [
             'A' => NumberFormat::FORMAT_NUMBER, // No
             'B' => NumberFormat::FORMAT_NUMBER, // Ticket ID
-            'D' => NumberFormat::FORMAT_NUMBER, // User ID
-            'F' => NumberFormat::FORMAT_NUMBER, // Support ID
-            'H' => NumberFormat::FORMAT_NUMBER, // Category ID
-            'J' => NumberFormat::FORMAT_NUMBER, // Assets ID
-            'S' => NumberFormat::FORMAT_NUMBER, // Waiting Hour
-            'W' => NumberFormat::FORMAT_NUMBER, // Time Spent Minutes
+            'O' => NumberFormat::FORMAT_NUMBER, // Waiting Hour
+            'R' => NumberFormat::FORMAT_NUMBER, // Time Spent Minutes
             // Date columns kita output string "Y-m-d H:i:s" -> biar aman, ga usah excel-date (lebih konsisten)
         ];
     }
